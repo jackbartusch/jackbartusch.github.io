@@ -1,0 +1,112 @@
+body, html {
+    height: 100%;
+    width: 75%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+}
+
+@font-face {
+    font-family: Commit Mono;
+    src: url(CommitMono-400-Regular.otf);
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    filter: url(#noiseFilt);
+    pointer-events: none; /* Allows you to click "through" the grain to the sliders */
+    z-index: 9999;        /* Keeps it on top of all UI */
+    opacity: 0.1;         /* Fine-tune the overall visibility here */
+}
+
+.three-slider {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 100%;
+    height: 100%;
+    min-width: 500px;
+    overflow: auto;
+}
+.slider-container {
+  display: grid;
+  grid-template-areas: "overlap";
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.slider-info {
+  grid-area: overlap;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centers label vertically */
+  align-items: center;     /* Centers label horizontally */
+  z-index: 2;              /* Places text on top of slider */
+  pointer-events: none;    /* Ensures mouse clicks pass through to the slider */
+}
+
+.slider-label {
+  color: white;
+  font-family: 'Commit Mono', monospace;
+  font-size: 1rem;
+  opacity: 1;
+}
+
+input[type="range"],
+meter,
+progress {
+  grid-area: overlap;
+  margin-block-end: 0px;
+  writing-mode: vertical-lr;
+  direction: rtl;
+  -webkit-appearance: none;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  accent-color: black;
+  border: none;
+  outline: none;
+  margin: 0;
+  outline: 0;
+  opacity: 0.8;
+  transition: opacity 0.2s ease-in-out;
+}
+input[type="range"]:hover {
+  opacity: 1;
+}
+::-webkit-slider-runnable-track {
+    background: linear-gradient(to bottom, #680117, #641828);
+    width: 100%;
+    height: 100%;
+}
+
+::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 0px;
+    background: #000;
+    box-shadow: 0 -5000px 0 5000px #000000;
+}
+::-moz-range-track {
+  background: linear-gradient(to bottom, #680117, #641828);
+  width: 100%;
+  height: 100%;
+}
+::-moz-range-thumb {
+  width: 100%;
+  height: 0px;
+  background: #000;
+  border: none;
+  border-radius: 0;
+  box-shadow: 0 -5000px 0 5000px #000000;
+}
+

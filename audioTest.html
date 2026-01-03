@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+    <head><title>Testing Audio</title></head>
+    <link rel="stylesheet" href="audioTest.css">
+
+    <div class="three-slider">
+        <div class="slider-container">
+            <input type="range" id="dryWet" min="0" max="1" value="1" step="0.01" class="vertical-slider"/>
+            <div class="slider-info">
+                <span class="slider-label">mix</span>
+                <output id="mix-val" class="slider-label">100%</output>
+            </div>
+        </div>
+        <div class="slider-container">
+            <input type="range" id="amp" min="0" max="0.01" value="0.002" step="0.00005" class="vertical-slider"/>
+            <div class="slider-info">
+                <span class="slider-label">amplitude</span>
+                <output id="amp-val" class="slider-label">20%</output>
+            </div>
+        </div>
+        <div class="slider-container">
+            <input type="range" id="freq" min="2000" max="19000" value="10000" step="10" class="vertical-slider"/>
+            <div class="slider-info">
+                <span class="slider-label">frequency</span>
+                <output id="freq-val" class="slider-label">10000 hz</output>
+            </div>
+        </div>
+    </div>
+        
+    <svg width="0" height="0" style="position: absolute;">
+        <filter id="noiseFilt">
+            <feTurbulence type="fractalNoise" baseFrequency=".8" />
+            <feColorMatrix type='saturate' values='0' />
+            <feBlend in='SourceGraphic' mode='soft-light' />
+        </filter>
+    </svg>
+
+    
+    <!-- <audio autoplay crossorigin="anonymous">
+        <source src = "https://raw.githubusercontent.com/jackbartusch/audioTest/main/website_chords_1_1_1_26.mp3" type = "audio/mpeg">
+        Your browser does not support the audio element. 
+    </audio> !-->
+
+    <script>
+        const audioContext = new AudioContext();
+        const loopStart = 21.332;
+        const loopEnd = 42.667;
+
+        let sourceNode;
+        let audioBuffer;
+
+        async function loadAudio() {
+            const response = await fetch("https://raw.githubusercontent.com/jackbartusch/audioTest/main/website_chords_1_1_1_26.mp3");
+            const arrayBuffer = await response.arrayBuffer();
+            audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+            console.log("Audio Loaded and Decoded");
+        }
+
+        loadAudio();
+
+        function startLoop(){
+            sourceNode = audioContext.createBufferSource();
+            sourceNode.buffer = audioBuffer;
+
+            sourceNode.loop = true;
+            sourceNode.loopStart = loopStart;
+            sourceNode.loopEnd = loopEnd;
+
+            sourceNode.connect(dryGainNode);
+            sourceNode.connect(delayNode);
+
+            sourceNode.start(0, 0);
+        }
+
+        //const audioElement = document.querySelector("audio");
+        //const track = audioContext.createMediaElementSource(audioElement);
+
+        let hasStarted = false;
+        document.addEventListener("click", () => {
+            if (audioContext.state === "suspended") {
+                audioContext.resume();
+            }
+
+            if(!hasStarted)
+            {
+                startLoop();
+                //audioElement.play();
+                hasStarted = true;
+            }
+        });
+
+        /*
+        audioElement.addEventListener("timeupdate", () => {
+            loopStart = 21.332;
+            loopEnd = 42.666;
+
+            if (audioElement.currentTime >= loopEnd){
+                audioElement.currentTime = loopStart;
+                audioElement.play();
+            }
+        }); */
+
+        const dryGainNode = audioContext.createGain();
+        const wetGainNode = audioContext.createGain();
+        const delayNode = audioContext.createDelay(1.0);
+        const modulator = audioContext.createOscillator();
+        const modGain = audioContext.createGain();
+
+        modulator.frequency.value = 10000.0;
+        modulator.connect(modGain);
+        modGain.gain.value = 0.001;
+        modulator.start();
+
+        delayNode.delayTime.value = 0.0001;
+        //track.connect(dryGainNode);
+        modGain.connect(delayNode.delayTime);
+
+
+
+        //track.connect(delayNode);
+        delayNode.connect(wetGainNode);
+
+        dryGainNode.connect(audioContext.destination);
+        wetGainNode.connect(audioContext.destination);  
+
+        const dryWetControl = document.querySelector("#dryWet");
+        const ampControl = document.querySelector("#amp");
+        const freqControl = document.querySelector("#freq");
+
+        ampControl.addEventListener("input", () => {
+            modGain.gain.value = ampControl.value;
+            document.querySelector("#amp-val").textContent = parseInt(ampControl.value*10000) + "%";
+        });
+
+        freqControl.addEventListener("input", () => {
+            modulator.frequency.value = freqControl.value;
+            document.querySelector("#freq-val").textContent = freqControl.value + "hz";
+        });
+
+         dryWetControl.addEventListener("input", () => {
+            dryGainNode.gain.value = 1-dryWetControl.value;
+            wetGainNode.gain.value = dryWetControl.value;
+            document.querySelector("#mix-val").textContent = parseInt(dryWetControl.value*100) + "%";
+        });
+
+
+    </script>
+
+</html>
