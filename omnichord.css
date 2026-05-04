@@ -1,0 +1,320 @@
+body, html {
+    height: 100%;
+    width: 100%;
+    border: 0;
+    margin: 0;
+    background-color: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+@font-face {
+    font-family: Commit Mono;
+    src: url(CommitMono-400-Regular.otf);
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    filter: url(#noiseFilt);
+    pointer-events: none; /* Allows you to click "through" the grain to the sliders */
+    z-index: 9999;        /* Keeps it on top of all UI */
+    opacity: 0.1;         /* Fine-tune the overall visibility here */
+}
+
+.topContainer{
+  width: 100%;
+  height: 50%;
+  display: grid;
+  grid-template-columns: 66.666667% 33.33333%;
+}
+
+.chordContainer{
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+}
+
+.keyboard{
+  width: 100%;
+  height: 50%;
+}
+
+.container{
+    width: 100%;
+    height: 50%;
+    display: flex;
+    flex-direction: row;
+    justify-items: center;
+    font-family: 'Commit Mono', monospace;
+}
+
+.container button{
+    flex: 1;
+}
+
+.chordButton{
+    background-color: #680117;
+    border-top: none;
+    border-bottom: none;
+    border-bottom: 2px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    opacity: 0.8;
+    transition: opacity 0.2s ease-in-out;
+    font-family: 'Commit Mono', monospace;
+    font-size: 1rem;
+    color: black;
+
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.chordButton.active{
+    opacity: 1;
+}
+
+.noteButton{
+    background-color: white;
+    border-top: none;
+    border-bottom: 2px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    opacity: 0.8;
+    transition: opacity 0.2s ease-in-out;
+    font-family: 'Commit Mono', monospace;
+    font-size: 1rem;
+    color: black;
+
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent
+}
+
+.spacer{
+  flex: 1;
+}
+
+.noteButton.playing{
+    opacity: 1;
+}
+
+.navBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 7.5vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  z-index: 10;
+  position: absolute;
+  top: 0;
+}
+
+.navBar ul{
+  display: flex;
+  background-color: #000;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.navBar ul li{
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+}
+
+.navBar ul li a {
+  font-family: 'Commit Mono', monospace;
+  display: flex;
+  align-items: center;
+  color: white;
+  text-decoration: none;
+  padding: 0 16px;
+  height: 100%;
+  opacity: 0.8;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.navBar ul li a.active {  
+  background-color: #ffffff;
+  color: black;
+}
+
+.navBar ul li a:hover {
+  opacity: 1;
+}
+
+.sidebar {
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 7.5%;
+  left: 0;
+  background-color: transparent;
+  overflow-x: hidden; 
+  transition: 0.3s ease-in-out;
+  width: max-content;
+  transform: translateX(-100%);
+  height: 100%;
+  z-index: 6;
+}
+
+.sidebar a {
+  padding: 0 16px;
+  text-decoration: none;
+  font-family: 'Commit Mono', monospace;
+  color: white;
+  display: flex;
+  transition: 0.3s;
+  height: 7.5vh;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.8;
+  box-sizing: border-box;
+}
+.sidebar a.sideActive {
+  background-color: white;
+  color: black;
+}
+
+.sidebar a:hover {
+  opacity: 1;
+}
+
+.openbtn {
+  font-size: 20px;
+  cursor: pointer;
+  background-color: transparent;
+  color: white;
+  border: none;
+  opacity: 0.8;
+  transition: opacity 0.2s ease-in-out;
+  width: 100%;
+  height: 7vh; 
+  padding-left: 16px;       
+  box-sizing: border-box; 
+  align-items: center;   
+}
+
+.openbtn:hover {
+  opacity: 1;
+}
+
+.sliderBody {
+    flex-grow: 1;
+    height: 92.5%;
+    width: 75%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    position: fixed;
+    top: 7.5vh;
+    z-index: 5;
+}
+
+@media screen and (max-width: 600px) {
+  .sliderBody{
+    width: 100%;
+  }  
+}
+
+.three-slider {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+.slider-container {
+  display: grid;
+  grid-template-areas: "overlap";
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.slider-info {
+  grid-area: overlap;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centers label vertically */
+  align-items: center;     /* Centers label horizontally */
+  z-index: 11;              /* Places text on top of slider */
+  pointer-events: none;    /* Ensures mouse clicks pass through to the slider */
+}
+
+.slider-label {
+  color: white;
+  font-family: 'Commit Mono', monospace;
+  font-size: 1rem;
+  opacity: 1;
+  z-index: 11;
+}
+
+.vertical-slider {
+  touch-action: none;
+  grid-area: overlap;
+  margin-block-end: 0px;
+  writing-mode: vertical-lr;
+  direction: rtl;
+  -webkit-appearance: none;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  accent-color: black;
+  border: none;
+  outline: none;
+  margin: 0;
+  outline: 0;
+  opacity: 0.8;
+  transition: opacity 0.2s ease-in-out;
+}
+.vertical-slider:hover {
+  opacity: 1;
+}
+.vertical-slider::-webkit-slider-runnable-track {
+    background: linear-gradient(to bottom, #680117, #641828);
+    width: 100%;
+    height: 100%;
+}
+
+.vertical-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 0px;
+    background: #000;
+    box-shadow: 0 -5000px 0 5000px #000000;
+}
+.vertical-slider::-moz-range-track {
+  background: linear-gradient(to bottom, #680117, #641828);
+  width: 100%;
+  height: 100%;
+}
+.vertical-slider::-moz-range-thumb {
+  width: 100%;
+  height: 0px;
+  background: #000;
+  border: none;
+  border-radius: 0;
+  box-shadow: 0 -5000px 0 5000px #000000;
+}

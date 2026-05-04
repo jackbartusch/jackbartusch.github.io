@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Jack Bartusch: About</title>
+        <title>Jack Bartusch: Digital Effects Pedal</title>
         <meta name = "viewport" content = "width=device-width, initial-scale = 1.0">
     </head>
     <link rel="stylesheet" href="audioTest.css">
@@ -11,13 +11,18 @@
             <button class="openbtn">&#8801;</button>
         </div>
         <ul>
+            <li><a href="projects.html">digital effects pedal</a></li>
+            <li><a href="plugin.html">spectral reduction plugin</a></li>
+            <li><a href="website.html" class="active">web audio effects</a></li>
+            <li><a href="university.html">university projects</a></li>
+            <li><a href="server.html">home server</a></li>
         </ul>
     </div>
 
     <div id="mySidebar" class="sidebar">
-        <a href="index.html" class="sideActive">about</a>
+        <a href="index.html">about</a>
         <a href="audioTest.html">effects</a>
-        <a href="projects.html">projects</a>
+        <a href="projects.html" class="sideActive">projects</a>
         <a href="omnichord.html">auto chord</a>
     </div>
 
@@ -28,26 +33,6 @@
             <feBlend in='SourceGraphic' mode='soft-light' />
         </filter>
     </svg>
-
-    <body>
-        <div class="paragraph">
-            <h2>about me</h2>
-            <p>
-                I am curently a Master's student at the University of Melbourne, 
-                studying Electrical Engineering. With a keen interest in audio technology and digital 
-                signal processing, as well as the way this intersects with computing and 
-                communications theory.
-            </p>
-            <p>
-                The <i><b>effects</b></i> section of this website showcases a collection of audio effects I have
-                coded using the WebAudio API, with controls to change and alter the sound with
-                three simple sliders.<br>
-                The <i><b>projects</b></i> sections has a series of writeups on a few personal projects of mine
-                - including the effects on this page - as well as some projects completed during my time at
-                University.
-            </p>
-        </div>
-    </body>
 
     <script>
         let open = false;

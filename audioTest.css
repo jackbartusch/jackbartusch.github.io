@@ -1,12 +1,20 @@
 body, html {
     height: 100%;
-    width: 75%;
+    width: 100%;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     background-color: black;
+    color: white;
+    font-family: 'Commit Mono', monospace;
+}
+
+@media screen and (max-width: 600px) {
+  body, html {
+    width: 100%;
+  }  
 }
 
 @font-face {
@@ -27,12 +35,32 @@ body::before {
     opacity: 0.1;         /* Fine-tune the overall visibility here */
 }
 
+.sliderBody {
+    flex-grow: 1;
+    height: 92.5%;
+    width: 75%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    position: fixed;
+    top: 7.5vh;
+    z-index: 5;
+}
+
+@media screen and (max-width: 600px) {
+  .sliderBody{
+    width: 100%;
+  }  
+}
+
 .three-slider {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     width: 100%;
     height: 100%;
-    min-width: 500px;
     overflow: auto;
 }
 .slider-container {
@@ -50,7 +78,7 @@ body::before {
   flex-direction: column;
   justify-content: center; /* Centers label vertically */
   align-items: center;     /* Centers label horizontally */
-  z-index: 2;              /* Places text on top of slider */
+  z-index: 11;              /* Places text on top of slider */
   pointer-events: none;    /* Ensures mouse clicks pass through to the slider */
 }
 
@@ -59,11 +87,35 @@ body::before {
   font-family: 'Commit Mono', monospace;
   font-size: 1rem;
   opacity: 1;
+  z-index: 11;
+}
+.upper-label {
+  color: white;
+  grid-area: overlap;
+  font-family: 'Commit Mono', monospace;
+  font-size: 1rem;
+  opacity: 1;
+  z-index: 11;
+  position: absolute;
+  top: 1%;
+  left: 1%;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+.lower-label {
+  color: white;
+  font-family: 'Commit Mono', monospace;
+  font-size: 1rem;
+  opacity: 1;
+  z-index: 11;
+  position: absolute;
+  bottom: 1%;
+  left: 1%;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
 }
 
-input[type="range"],
-meter,
-progress {
+.vertical-slider {
   grid-area: overlap;
   margin-block-end: 0px;
   writing-mode: vertical-lr;
@@ -80,28 +132,28 @@ progress {
   opacity: 0.8;
   transition: opacity 0.2s ease-in-out;
 }
-input[type="range"]:hover {
+.vertical-slider:hover {
   opacity: 1;
 }
-::-webkit-slider-runnable-track {
+.vertical-slider::-webkit-slider-runnable-track {
     background: linear-gradient(to bottom, #680117, #641828);
     width: 100%;
     height: 100%;
 }
 
-::-webkit-slider-thumb {
+.vertical-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 100%;
     height: 0px;
     background: #000;
     box-shadow: 0 -5000px 0 5000px #000000;
 }
-::-moz-range-track {
+.vertical-slider::-moz-range-track {
   background: linear-gradient(to bottom, #680117, #641828);
   width: 100%;
   height: 100%;
 }
-::-moz-range-thumb {
+.vertical-slider::-moz-range-thumb {
   width: 100%;
   height: 0px;
   background: #000;
@@ -110,3 +162,237 @@ input[type="range"]:hover {
   box-shadow: 0 -5000px 0 5000px #000000;
 }
 
+.navBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 7.5vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  z-index: 10;
+  position: absolute;
+  top: 0;
+}
+
+.navBar ul{
+  display: flex;
+  background-color: #000;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.navBar ul li{
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+}
+
+.navBar ul li a {
+  font-family: 'Commit Mono', monospace;
+  display: flex;
+  align-items: center;
+  color: white;
+  text-decoration: none;
+  padding: 0 16px;
+  height: 100%;
+  opacity: 0.8;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.navBar ul li a.active {  
+  background-color: #ffffff;
+  color: black;
+}
+
+.navBar ul li a:hover {
+  opacity: 1;
+}
+
+.meter-container {
+  display: grid;
+  grid-template-areas: "overlap";
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  transition: opacity 0.2s ease-in-out;
+  opacity: 1;
+}
+
+.meter-fill {
+  grid-area: overlap;
+  width: 100%;
+  height: 0%;
+  background: linear-gradient(to top, #641828, #680117); 
+  transition: height 0.05s ease-in-out;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.meter-container:hover {
+  opacity: 1;
+}
+
+.bypass-button {
+  display: flex;
+  font-family: 'Commit Mono', monospace;
+  box-shadow:inset;
+  transition: color 0.5s, background-color 0.5s, height 0.2s, opacity 0.2s ease-in-out;
+  border: none;
+  aspect-ratio: 1/1;
+  justify-content: center;
+  align-items: center;
+  border-radius: 15%;
+  opacity: 0.8;
+  font-size: 1.5rem;
+}
+
+.bypass-button:hover {
+  opacity: 1;
+}
+
+.bypass-button.bypassed {
+  height: 3.5%;
+  background-color: black;
+  color: white;
+  content: "+";
+}
+
+.bypass-button.active {
+  height: 4%;
+  background-color: white;
+  color: black;
+  content: "x";
+}
+
+.thumb-only-slider {
+  grid-area: overlap;
+  margin-block-end: 0px;
+  writing-mode: vertical-lr;
+  direction: rtl;
+  -webkit-appearance: none;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  margin: 0;
+  outline: 0;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  z-index: 10;
+}
+
+.thumb-only-slider:hover {
+  opacity: 1;
+}
+
+.meter-container:hover .upper-label{
+  opacity: 1;
+}
+.meter-container:hover .lower-label{
+  opacity: 1;
+}
+
+.thumb-only-slider::-webkit-slider-runnable-track {
+    background: none;
+    width: 100%;
+    height: 100%;
+}
+
+.thumb-only-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 1%;
+  background: white;
+}
+.thumb-only-slider::-moz-range-track {
+  background: none;
+  width: 100%;
+  height: 100%;
+}
+.thumb-only-slider::-moz-range-thumb {
+  width: 100%;
+  height: 1%;
+  background: white;
+  border: none;
+  border-radius: 0;
+}
+
+.sidebar {
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 7.5%;
+  left: 0;
+  background-color: black; 
+  overflow-x: hidden; 
+  transition: 0.3s ease-in-out;
+  width: max-content;
+  transform: translateX(-100%);
+  height: 100%;
+  z-index: 6;
+}
+
+.sidebar a {
+  padding: 0 16px;
+  text-decoration: none;
+  font-family: 'Commit Mono', monospace;
+  color: white;
+  display: flex;
+  transition: 0.3s;
+  height: 7.5vh;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.8;
+  box-sizing: border-box;
+}
+.sidebar a.sideActive {
+  background-color: white;
+  color: black;
+}
+
+.sidebar a:hover {
+  opacity: 1;
+}
+
+.openbtn {
+  font-size: 20px;
+  cursor: pointer;
+  background-color: #000;
+  color: white;
+  border: none;
+  opacity: 0.8;
+  transition: opacity 0.2s ease-in-out;
+  width: 100%;
+  height: 7vh; 
+  padding-left: 16px;       
+  box-sizing: border-box; 
+  align-items: center;   
+}
+
+.openbtn:hover {
+  opacity: 1;
+}
+
+.paragraph {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 7.5vh;
+  width: 75%;
+  justify-content: left;
+  justify-items: left;
+  align-items: flex-start;
+  align-content: flex-start;
+  line-height: 1.5rem;
+  font-size: 0.9rem;
+}

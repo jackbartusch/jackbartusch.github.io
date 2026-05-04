@@ -1,0 +1,49 @@
+table, th, td {
+    border: 1px solid plum;
+    border-collapse: collapse;
+}
+
+h1 {
+    font-size: 20vw;
+}
+
+
+@font-face {
+    font-family: Commit Mono;
+    src: url(CommitMono-400-Regular.otf);
+}
+
+* {
+    font-family: 'Commit Mono', Courier, monospace;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: black;
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+ul li {
+  float: left;
+}
+
+ul li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+ul li a:hover {
+  background-color: #111111;
+}
+
+ul li a:active {
+  background-color: palevioletred;
+}
