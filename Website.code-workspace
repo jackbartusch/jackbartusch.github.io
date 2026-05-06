@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"name": "test_1",
+			"path": "../../Teensy/Display Testing/test_1"
+		},
+		{
+			"name": "teensy_encoder_testing",
+			"path": "C:/Users/JackB/Documents/PlatformIO/Projects/teensy_encoder_testing"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "Website"
+	}
+}

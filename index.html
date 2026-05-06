@@ -14,12 +14,13 @@
         </ul>
     </div>
 
-    <div id="mySidebar" class="sidebar">
+    <!-- ****************CHANGE SIDE NAVBAR***************** -->
+    <div id="mySidebar" class="index-sidebar">
         <a href="index.html" class="sideActive">about</a>
-        <a href="audioTest.html">effects</a>
-        <a href="projects.html">projects</a>
-        <a href="omnichord.html">auto chord</a>
+        <a href="/effects/autoChord.html">effects</a>
+        <a href="/projects/multieffects.html">projects</a>
     </div>
+    <!-- ****************CHANGE SIDE NAVBAR***************** -->
 
     <svg width="0" height="0" style="position: absolute;">
         <filter id="noiseFilt">
@@ -29,28 +30,26 @@
         </filter>
     </svg>
 
-    <body>
-        <div class="paragraph">
-            <h2>about me</h2>
+    <body class="paragraph">
+        <div class="project-div">
+        <div class="project-body">
+            <h2>about</h2>
             <p>
-                I am curently a Master's student at the University of Melbourne, 
-                studying Electrical Engineering. With a keen interest in audio technology and digital 
-                signal processing, as well as the way this intersects with computing and 
-                communications theory.
+                I am curently a Master of Electrical Engineering student at the University of Melbourne. With a keen interest in 
+                audio technology, digital signal processing, and embedded computing.
             </p>
             <p>
                 The <i><b>effects</b></i> section of this website showcases a collection of audio effects I have
-                coded using the WebAudio API, with controls to change and alter the sound with
-                three simple sliders.<br>
-                The <i><b>projects</b></i> sections has a series of writeups on a few personal projects of mine
-                - including the effects on this page - as well as some projects completed during my time at
+                coded using the WebAudio API, with controls to change and alter the sound.<br>
+                The <i><b>projects</b></i> sections has a series of writeups on a few personal projects of mine, as well as some projects completed during my time at
                 University.
             </p>
+        </div>
         </div>
     </body>
 
     <script>
-        let open = false;
+        let open = true;
         const openbtn = document.querySelector(".openbtn");
         openbtn.addEventListener("click", () => {
             open = !open;
