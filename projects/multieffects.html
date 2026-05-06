@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html class="paragraph">
+    <head>
+        <title>Jack Bartusch: Digital Effects Pedal</title>
+        <meta name = "viewport" content = "width=device-width, initial-scale = 1.0">
+    </head>
+    <link rel="stylesheet" href="../audioTest.css">
+
+    <!-- ****************CHANGE PROJECT NAVBAR***************** -->
+    <div class="navBar">
+        <div>
+            <button class="openbtn">&#8801;</button>
+        </div>
+        <ul>
+            <li><a class="active" href="/projects/multieffects.html">digital effects pedal</a></li>
+            <li><a href="/projects/plugin.html">spectral reduction plugin</a></li>
+            <li><a href="/projects/website.html">web audio effects</a></li>
+            <li><a href="/projects/university.html">university projects</a></li>
+            <li><a href="/projects/server.html">home server</a></li>
+        </ul>
+    </div>
+    <!-- ****************CHANGE PROJECT NAVBAR***************** -->
+
+    <!-- ****************CHANGE SIDE NAVBAR***************** -->
+    <div id="mySidebar" class="sidebar">
+        <a href="../index.html">about</a>
+        <a href="/effects/autoChord.html">effects</a>
+        <a href="/projects/multieffects.html" class="sideActive">projects</a>
+    </div>
+    <!-- ****************CHANGE SIDE NAVBAR***************** -->
+
+    <svg width="0" height="0" style="position: absolute;">
+        <filter id="noiseFilt">
+            <feTurbulence type="fractalNoise" baseFrequency=".8" />
+            <feColorMatrix type='saturate' values='0' />
+            <feBlend in='SourceGraphic' mode='soft-light' />
+        </filter>
+    </svg>
+
+    <body class="paragraph">
+    <div class="project-div">
+        <iframe 
+            src="https://www.youtube.com/embed/fmYYiIAaHmU?si=cMuhEwTMaPfgbBfp" 
+            title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; 
+            encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" 
+            allowfullscreen class="videoPlayer">
+        </iframe>
+        
+        <div class="project-body">
+        <p>The aim of this project was to develop a battery powered digital multieffects pedal with analog inputs and outputs, and simple graphical user interface. In this it was essential to ensure all audio effects have a wide degree of changeable parameters, allowing for creative musical expression, whilst remaining stable and straightforward to use. It was also important to allow for real time reordering of the signal chain, so that effects could be placed in any arbitrary order. It was also a main goal to port common digital audio workstation (DAW) effects into a standalone hardware format, which for many effects does not yet exist.</p>
+
+        <h2>Teensy</h2>
+        <p>The design was built around the 'Teensy 4.0' micro controller, featuring an ARM Cortex M7 processor, a variety of I/O pins supporting various serial communication protocols, as well as compatibility with Arduino code libraries. This was chosen for its relatively low price point given its power, and for the ability to connect the controller to an 'Audio shield' which implements basic audio input and output, as well as some simple audio manipulation tools being available through the Teensy Audio Library.</p>
+        
+        <div class="image-div">
+            <img src="/photos/teensy_trns.png" alt="teensy 4.0" class="image">
+            <p class="fig-label">Teensy 4.0</p>
+        </div>
+
+        <h2>Audio Chain</h2>
+        <p>To enable real-time rearranging of effects, a custom signal chain was built on top of the Teensy Audio Library. Each audio effect is encapsulated in a wrapper class that manages its inputs, outputs, custom graphical elements, and encoder interactions. Whilst this makes each node larger, the Teensy has ample memory for this structure, and it in general makes the code highly modular, allowing easy addition of new effects.</p>
+        <p>The signal chain was then designed as a doubly linked list. This was chosen as the structure is not likely to be large, but rearranging was a main goal of the project, implemented in <span class="math">O(n)</span> time, with <span class="math">O(1)</span> traversals to neighbouring nodes and <span class="math">O(n/2)</span> indexing from the main menu being additional benefits.</p>
+        <p>A significant challenge here was adapting the Teensy Audio Library to this paradigm, as it was designed for static connections. The way around this was to fully deconstruct the audio chain every time a node is swapped. Whilst this does mean audio drops out whilst the chain is being reconstructed, the fast processing speed of the Teensy means it is only for a fraction of a second, and as the chain is unlikely to be reordered whilst audio is playing, this was an acceptable trade off.</p>
+
+        <h2>Effects</h2>
+        <p>Beyond the basic Teensy Audio library tools, a primary goal was to reverse-engineer and emulate DAW effects currently only available on a computer, for hardware use.</p>
+
+        <h3>Erosion</h3>
+        <p>The first effect I attempted to recreate was the 'erosion' effect available in Ableton Live. This effect works by modulating the speed of a delay at audio-rate, giving a very digital, bit crushed like sound.</p>
+        <p>The biggest challenge in developing this effect was in understanding how it works. Ableton provides very little information about the specifics of the effect however in the manual they mention it is based around modulating a delay. I first attempted to recreate the effect in the Ableton Live software itself, modulating various parameters of the inbuilt delay effect figuring out which elements needed to be changed to achieve the desired sound.</p>
+        <p>Once the effect was understood, it was then fairly trivial to implement on the Teensy. A modulatable delay effect already existed, and it was simply a case of tying the built in signal generators to the time parameter of this, as well as implementing controls for amplitude of the modulation, frequency of the modulating wave, and waveform of the modulating wave - morphing between sine/saw/square/noise, building on top of Ableton's binary sine or noise control.</p>
+        <div class="image-div">
+            <img src="/photos/erosion_trns.png" alt="erosion effect" class="image">
+            <p class="fig-label">Ableton Erosion Effect</p>
+        </div>
+
+        <h3>OTT</h3>
+        <p>Another very popular Ableton effect I wanted to implement was the OTT compression effect. This provides very extreme dynamic range reduction, and colouration through both upward and downward multiband compression. The design of this is well understood, however the Audio library does not contain any compressor code, requiring recreation from scratch.</p>
+        <p>My compression algorithm was based on <a href="https://www.researchgate.net/publication/277772168_Digital_Dynamic_Range_Compressor_Design-A_Tutorial_and_Analysis" target="_blank">this</a> research article. I began by doing hand calculations of how the algorithm would affect arbitrary audio packets within the range of the Teensy Audio Library, ensuring changing parameters affected the output in a way that was understood and repeatable. I then tested the formula in MATLAB, on a variety of audio files, and waveforms. I adapted the MATLAB to C++ to work with the Teensy. Here I had overlooked the effect analog noise would have, especially on the upward compression, making a small gate necessary to ensure this noise was not amplified above the main signal.</p>
+        <p>Once the basic compression algorithms had been developed, I looked to recreate the specific OTT implementation. Fortunately Ableton built this effect within their standard multiband compressor, meaning all I had to do was split the audio signal into three frequency bands, and copy the parameter values from the existing effect. As my effect was built upon peak detection however, rather than RMS values, some tweaking was needed, particularly in the time values as well as using softer threshold values.</p>
+        <p>In order to implement as a playable effect, I had to make a tradeoff between offering complex control over every parameter, or providing simple control over a limited number of parameters. I chose the latter in this case, as the small control interface I was planning would make in depth control difficult, with playability being more important. I mitigated this with impactful changes being available through input gain to alter compression threshold holistically, dry/wet mix to provide parallel compression, and a global time to scale the attack and release of the six compressors.</p>
+
+        <div class="image-div">
+            <img src="/photos/ott_trns.png" alt="ott effect" class="image">
+            <p class="fig-label">Ableton OTT Effect</p>
+        </div>
+
+        <h3>EQ</h3>
+        <p>The final custom effect I have implemented as of current is a three band EQ, with high/low shelf and mid band peaking/notch filter. This was fairly straightforward as the Teensy Audio Library already has built in effects for filtering.</p>
+        <p>I decided to use biquad filters. This was to ensure stability, as well as to allow for flat crossover regions between the three bands, and simple construction of the mid band filter. Biquad filter coefficients are determined in real-time, based on user input, where the fast processor on the Teensy, as well as the limited number of bands ensures no slow downs occur. In this, each band has control over the frequency, quality factor (slope), and magnitude of volume increase/decrease.</p>
+
+        <h2>PCB</h2>
+        <p>The PCB for the project was designed in Altium designer, as a 2 layer board with central ground planes on both sides. This was a small challenge for me, as it was my first time designing a PCB, meaning both the software and theory behind the design was brand new.</p>
+        <p>All hardware was first prototyped on a breadboard, ensuring I understood the connections that needed to be made. This design was then transferred to a circuit layout in Altium, and then converted to a PCB schematic. Trace running was mostly simple, due to the small part count and large space I allowed for comfortable user input, and battery placement.</p>
+        <p>Soldering the PCB was another challenge, as I had limited experience in this department. I had originally planned to have the Teensy soldered directly to the Audio shield, however after killing a board by having the Teensy too close to the shield, I ended up using a header in between. Whilst this adds pretty significant height, it ensures every part is easily replaceable without significant desoldering. Fortunately the rest of the components were very easy to get properly connected and after fixing the Audio Shield, the PCB worked perfectly.</p>
+
+        <div class="image-div">
+            <img src="/photos/pcb_rot.png" alt="pcb design" class="image">
+            <p class="fig-label">PCB Trace Schematic in Altium Designer</p>
+        </div>
+
+        <h2>Graphics</h2>
+        <p>Graphics were implemented using a small I<sup>2</sup>C display, with code built on top of the Arduino graphics library. I decided that graphics should be displayed per-parameter, meaning when a parameter was changed its value would be displayed on the screen. This was mostly due to the small size of the screen, meaning displaying multiple values at once would become messy and hard to control.</p>
+        <p>The main function I implemented on top of the graphics library was a slider function, that draws a full sized box on the display, denoting the value of an effect parameter. A challenge here was text display, as the display was only black and white, any text written would disappear behind the slider if written in white, or be invisible until the slider hit it, if written in black. This meant re-writing the text display code from scratch, allowing it to take the slider position as input and change colour depending on the pixels underneath it, allowing for clear and reactive text.</p>
+
+        <h2>Encoders</h2>
+        <p>User input was implemented using digital rotary encoders, each with endless rotation, no detents, and a switch built in. I had initially designed with analog potentiometers in mind, however I found that changing between effects meant a knob would have to be twisted back to the value displayed on screen before changing it had any effect. This made encoders a natural choice, allowing writing over the stored value on each encoder as an effect was changed, and only adding on changes in encoder position, rather than their absolute position. This also had the added benefit of making button input easy, being built into the encoder, saving space on the final PCB. I also integrated a basic moving average filter for switch debounce and rotation detection, being essential for the decision on what parameter to display on screen.</p>
+
+        <h2>Battery</h2>
+        <p>Implementing battery power was relatively easy. This is as the Teensy has built in support for external power. I decided to use a small 1100mAh LiPo battery, connected in through a USB-C charging board. The only real challenge here was finding an appropriate step-up converter, as the battery charger has outputs for 3.3V Arduino connections, but the Teensy power input expects 5V USB power. Despite this, after integrating into the PCB, the battery power works as expected, and at an average of 100mA of current usage on the Teensy, a full 11 Hours of usage can be expected without needing to recharge.</p>
+
+        <h2>Future Improvements</h2>
+        <p>Whilst the current implementation meets the expected goals, a number of potential improvements have been identified through continual use of the project.</p>
+        <div class="image-div">
+            <img src="/photos/final_case v2.png" alt="CAD mockup of enclosure" class="image">
+            <p class="fig-label">CAD mockup of enclosure</p>
+        </div>
+        <ul>
+            <li><strong>Fabricate enclosure:</strong> As of current the project is just a PCB on standoffs, an enclosure has been designed and all that needs to be done is to have it 3D printed.</li>
+            <li><strong>Improve Noise Floor:</strong> Whilst the Teensy's inbuilt ADC's are quite stable and noise free, significant EMI is picked up by the analog inputs, and through the PCB. There is also particularly high cross-talk between the I<sup>2</sup>C display interface and the analog output. The latter can be fixed by simply rearranging the PCB traces to move the display further from the audio I/O, however the former will require some analog filtering and more appropriate grounding and shielding.</li>
+            <li><strong>Larger Display and More Inputs:</strong> Despite the display being very readable, I think a larger display would be very helpful for visualisations, especially in displaying multiple parameters, or more detailed parameter editing. Furthermore, where the limit of three encoders makes for very simple controls, having more inputs, even just buttons for allow for more sophisticated effects to be implemented.</li>
+            <li><strong>Implement more effects:</strong> Whilst the current revision has a lot of room for creativity and unique sounds, the Teensy's processor is only being used at ~50% leaving much room for more effects to be implemented, particularly very common effects, like reverb, and distortion.</li>
+            <li><strong>LFO and Modulation Matrix:</strong> Due to there being a high number of effects in a very small package, it becomes very hard to change parameters in real-time. Here implementing low frequency oscillators that could automatically change effect parameters without user input would prove invaluable.</li>
+        </ul>
+
+        <p>Overall the project meets the desired goals, with room for improvement possible, mostly in enhancing and increasing the capability of an already very useful device.</p>
+        </div>
+    </div>
+    </body>
+
+    <script>
+        let open = false;
+        const openbtn = document.querySelector(".openbtn");
+        openbtn.addEventListener("click", () => {
+            open = !open;
+            if(open){
+                document.getElementById("mySidebar").style.transform = "translateX(0%)";
+            }
+            else{
+                document.getElementById("mySidebar").style.transform = "translateX(-100%)";
+            }
+        })
+    </script>
+
+</html>
